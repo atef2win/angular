@@ -1,0 +1,102 @@
+<form [formGroup]="residenceForm" (ngSubmit)="onSubmit()" class="needs-validation" novalidate>
+  <!-- Champ caché pour l'ID -->
+  <input type="hidden" formControlName="id">
+
+  <!-- Nom de la résidence -->
+  <div class="mb-3">
+    <label for="name" class="form-label">Name:</label>
+    <input id="name" formControlName="name" class="form-control" [ngClass]="{'is-invalid': residenceForm.get('name')?.invalid && residenceForm.get('name')?.touched}">
+    <div *ngIf="residenceForm.get('name')?.invalid && residenceForm.get('name')?.touched" class="invalid-feedback">
+      Name is required and must be at least 3 characters long.
+    </div>
+  </div>
+
+  <!-- Adresse de la résidence -->
+  <div class="mb-3">
+    <label for="address" class="form-label">Address:</label>
+    <input id="address" formControlName="address" class="form-control" [ngClass]="{'is-invalid': residenceForm.get('address')?.invalid && residenceForm.get('address')?.touched}">
+    <div *ngIf="residenceForm.get('address')?.invalid && residenceForm.get('address')?.touched" class="invalid-feedback">
+      Address is required.
+    </div>
+  </div>
+
+  <!-- URL de l'image -->
+  <div class="mb-3">
+    <label for="image" class="form-label">Image URL:</label>
+    <input id="image" formControlName="image" class="form-control" [ngClass]="{'is-invalid': residenceForm.get('image')?.invalid && residenceForm.get('image')?.touched}">
+    <div *ngIf="residenceForm.get('image')?.invalid && residenceForm.get('image')?.touched" class="invalid-feedback">
+      Image URL is required and must be a valid URL.
+    </div>
+  </div>
+
+  <!-- Statut de la résidence -->
+  <div class="mb-3">
+    <label for="status" class="form-label">Status:</label>
+    <select id="status" formControlName="status" class="form-select" [ngClass]="{'is-invalid': residenceForm.get('status')?.invalid && residenceForm.get('status')?.touched}">
+      <option value="Disponible">Disponible</option>
+      <option value="En Construction">En Construction</option>
+      <option value="Vendu">Vendu</option>
+    </select>
+    <div *ngIf="residenceForm.get('status')?.invalid && residenceForm.get('status')?.touched" class="invalid-feedback">
+      Please select a valid status.
+    </div>
+  </div>
+
+  <!-- Liste des appartements -->
+  <div formArrayName="apartments">
+    <div *ngFor="let apartment of apartments.controls; let i = index" [formGroupName]="i" class="mb-3 border p-3">
+      <h5>Apartment {{ i + 1 }}</h5>
+
+      <!-- Numéro de l'appartement -->
+      <div class="mb-3">
+        <label for="apartmentNumber-{{i}}" class="form-label">Apartment Number:</label>
+        <input id="apartmentNumber-{{i}}" formControlName="apartmentNumber" class="form-control" [ngClass]="{'is-invalid': apartment.get('apartmentNumber')?.invalid && apartment.get('apartmentNumber')?.touched}">
+        <div *ngIf="apartment.get('apartmentNumber')?.invalid && apartment.get('apartmentNumber')?.touched" class="invalid-feedback">
+          Apartment Number is required and must be a number.
+        </div>
+      </div>
+
+      <!-- Numéro d'étage -->
+      <div class="mb-3">
+        <label for="floorNumber-{{i}}" class="form-label">Floor Number:</label>
+        <input id="floorNumber-{{i}}" formControlName="floorNumber" class="form-control" [ngClass]="{'is-invalid': apartment.get('floorNumber')?.invalid && apartment.get('floorNumber')?.touched}">
+        <div *ngIf="apartment.get('floorNumber')?.invalid && apartment.get('floorNumber')?.touched" class="invalid-feedback">
+          Floor Number is required and must be a number.
+        </div>
+      </div>
+
+      <!-- Surface -->
+      <div class="mb-3">
+        <label for="surface-{{i}}" class="form-label">Surface:</label>
+        <input id="surface-{{i}}" formControlName="surface" class="form-control" [ngClass]="{'is-invalid': apartment.get('surface')?.invalid && apartment.get('surface')?.touched}">
+        <div *ngIf="apartment.get('surface')?.invalid && apartment.get('surface')?.touched" class="invalid-feedback">
+          Surface is required.
+        </div>
+      </div>
+
+      <!-- Terrasse -->
+      <div class="mb-3">
+        <label for="terrace-{{i}}" class="form-label">Terrace:</label>
+        <input type="checkbox" id="terrace-{{i}}" formControlName="terrace" class="form-check-input">
+      </div>
+
+      <!-- Surface de la terrasse (conditionnelle) -->
+      <div *ngIf="apartment.get('terrace')?.value" class="mb-3">
+        <label for="surfaceTerrace-{{i}}" class="form-label">Surface Terrace:</label>
+        <input id="surfaceTerrace-{{i}}" formControlName="surfaceTerrace" class="form-control" [ngClass]="{'is-invalid': apartment.get('surfaceTerrace')?.invalid && apartment.get('surfaceTerrace')?.touched}">
+        <div *ngIf="apartment.get('surfaceTerrace')?.invalid && apartment.get('surfaceTerrace')?.touched" class="invalid-feedback">
+          Surface Terrace is required.
+        </div>
+      </div>
+
+      <!-- Bouton pour supprimer un appartement -->
+      <button type="button" class="btn btn-danger" (click)="removeApartment(i)">Remove Apartment</button>
+    </div>
+  </div>
+
+  <!-- Bouton pour ajouter un nouvel appartement -->
+  <button type="button" class="btn btn-secondary mb-3" (click)="addApartment()">Add Apartment</button>
+
+  <!-- Bouton de soumission -->
+  <button type="submit" class="btn btn-primary" [disabled]="residenceForm.invalid">Add Residence</button>
+</form>
