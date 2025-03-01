@@ -1,5 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { NgForm } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Residence } from 'src/app/core/models/residence';
+import { ResidenceService } from 'src/app/residence.service';
 
 @Component({
   selector: 'app-add-residence',
@@ -7,58 +10,58 @@ import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
   styleUrls: ['./add-residence.component.css']
 })
 export class AddResidenceComponent implements OnInit {
-  residenceForm: FormGroup;
+  res!: Residence;
+  updating = false;
 
-  constructor(private fb: FormBuilder) {
-    this.residenceForm = this.fb.group({});
 
-  }
+  selectedOption!: string;
 
-/*************  ✨ Codeium Command ⭐  *************/
-  /**
-   * Initializes the residence form with its default values
-   * and the required validators.
-   */
-/******  cb3cf982-d2b7-491b-9c08-02c4867535c4  *******/  ngOnInit(): void {
-    this.residenceForm = this.fb.group({
-      id: [''],
-      name: ['', [Validators.required, Validators.minLength(3)]],
-      address: ['', Validators.required],
-      image: ['', [Validators.required, Validators.pattern('https?://.+')]],
-      status: ['Disponible', Validators.required],
-      apartments: this.fb.array([]) // Tableau dynamique d'appartements
-    });
+  constructor(private route: ActivatedRoute,private residenceService: ResidenceService, private router: Router){}
 
-    // Ajouter un appartement par défaut
-    this.addApartment();
-  }
 
-  get apartments(): FormArray {
-    return this.residenceForm.get('apartments') as FormArray;
-  }
-
-  createApartment(): FormGroup {
-    return this.fb.group({
-      apartmentNumber: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
-      floorNumber: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
-      surface: ['', Validators.required],
-      terrace: [false],
-      surfaceTerrace: ['']
-    });
-  }
-
-  addApartment(): void {
-    this.apartments.push(this.createApartment());
-  }
-
-  removeApartment(index: number): void {
-    this.apartments.removeAt(index);
-  }
-
-  onSubmit(): void {
-    if (this.residenceForm.valid) {
-      const newResidence = this.residenceForm.value;
-      console.log(newResidence);
+  
+  ngOnInit(): void {
+    this.res = new Residence();
+    this.selectedOption = "Vendu";
+    
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id) {
+      this.updating = true;
+      this.residenceService.getResidences().subscribe(residences => {
+        const foundResidence = residences.find(res => res.id === +id); // Convert id to number if necessary
+        if (foundResidence) {
+          this.res = foundResidence;
+          console.log("Residence found");
+        } else {
+          console.log("Residence not found");
+        }
+      });
     }
+    
+}
+
+  @ViewChild('f') myForm: NgForm | undefined; 
+
+  onFormSubmit(){
+
+    
+
+      console.log(this.myForm?.value);
+      this.res.name = this.myForm?.value['name'];
+      this.res.address = this.myForm?.value['address'];
+      this.res.status = this.selectedOption;
+      this.res.image = "../../assets/R1.jpeg";
+      this.res.status = "Disponible";
+      if (!this.updating)
+      this.residenceService.getResidences().subscribe(residences => {
+        this.res.id = residences.length + 1;
+      });
+      if (!this.updating)
+      this.residenceService.addResidence(this.res);
+    else
+      this.residenceService.updateResidence(this.res);
+     // this.router.navigate(['/residences']);
+     console.log(this.residenceService.getResidences());
   }
+
 }

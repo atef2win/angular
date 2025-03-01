@@ -1,5 +1,7 @@
-import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, ViewChild } from '@angular/core';
+import { NgForm } from '@angular/forms';
+import { Apartment } from 'src/app/core/models/apartment';
+import { ApartmentsService } from 'src/app/services/apartments.service';
 
 @Component({
   selector: 'app-add-apartment',
@@ -7,33 +9,26 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
   styleUrls: ['./add-apartment.component.css']
 })
 export class AddApartmentComponent {
-  apartForm: FormGroup;
 
-  constructor(private fb: FormBuilder) {
-    this.apartForm = this.fb.group({
-      apartmentNumber: ['', [Validators.required, Validators.pattern('^[0-9]+$')]],
-      floorNumber: ['', [Validators.required, Validators.pattern('^[0-9]+$')]],
-      surface: ['', Validators.required],
-      terrace: ['no'],
-      surfaceTerrace: [{ value: '', disabled: true }, Validators.required],
-      category: ['', Validators.required],
-      residence: ['', Validators.required]
-    });
-  }
+  constructor (private apartmentsService : ApartmentsService) {}
 
-  // Gérer l'activation du champ Surface Terrace
-  onTerraceChange(value: string) {
-    if (value === 'yes') {
-      this.apartForm.get('surfaceTerrace')?.enable();
-    } else {
-      this.apartForm.get('surfaceTerrace')?.disable();
-      this.apartForm.get('surfaceTerrace')?.reset();
-    }
-  }
 
-  onSubmit() {
-    if (this.apartForm.valid) {
-      console.log('Formulaire soumis avec succès !', this.apartForm.value);
-    }
-  }
+      @ViewChild('f') myForm: NgForm | undefined; 
+      apart! : Apartment ; 
+  
+      onFormSubmit(){
+        this.apart = new Apartment(); 
+        
+  
+        console.log(this.myForm);
+          this.apart.surface = this.myForm?.value['surface'];
+          this.apart.terrace = this.myForm?.value['terrace'];
+          this.apart.surfaceterrace = this.myForm?.value['surfaceterrace'];
+          this.apart.category = this.myForm?.value['category'];
+          this.apart.ResidenceId = this.myForm?.value['ResidenceId'] -1;
+          this.apart.apartNum = this.myForm?.value['apartNum'];
+          this.apart.floorNum = this.myForm?.value['floorNum'];
+          console.log(this.apart);
+          this.apartmentsService.addApartment(this.apart);
+      }
 }

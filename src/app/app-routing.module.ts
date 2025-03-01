@@ -13,7 +13,6 @@ import { ResidenceDetailsComponent } from './residence-details/residence-details
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
-  { path: 'add-apartment', component: AddApartmentComponent },
   {
     path: 'residences',  
     component: ResidencesComponent,
@@ -25,11 +24,9 @@ const routes: Routes = [
     
   },
   {path: 'apartments/:id', component: ApartmentsByResidenceComponent},
-
   {path: 'residences/:id', component: ResidenceDetailsComponent},
   {path: 'addResidence', component: AddResidenceComponent},
   {path: 'add-apartment', component: AddApartmentComponent},
-  {path: 'add-residence', component: AddResidenceComponent},
   {path: 'updateResidence/:id', component: AddResidenceComponent},
   {path: '**', component: NotFoundComponent},
 
